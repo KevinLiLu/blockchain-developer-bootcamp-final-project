@@ -66,8 +66,8 @@ const getMyEvents = async () => {
 }
 
 const getManageEvents = () => {
-  console.log('get manage events');
-  document.getElementById('manage-events').style.display = 'inline';
+  // console.log('get manage events');
+  // document.getElementById('manage-events').style.display = 'inline';
 }
 
 const getAllEvents = async () => {
