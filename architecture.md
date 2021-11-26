@@ -1,5 +1,11 @@
 # Requirements
 
+## Rules
+1. An event can have multiple tickets
+2. Each ticket has a unique id
+3. An attendee can only purchase one ticket from a single event
+4. An attendee can have multiple tickets (one ticket from each event)
+
 ## Web App Features
 
 ### User can create an event

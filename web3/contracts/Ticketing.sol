@@ -4,15 +4,13 @@ pragma solidity >=0.5.16 <0.9.0;
 contract Ticketing {
 
   uint public eventCount = 0;
+  uint public ticketCount = 0;
 
-  mapping(uint => Event) public events;
+  mapping(uint => Event) public events;  // event id to Event struct
   uint[] public eventIds;
-  mapping(uint => mapping(address => Attendee)) public attendees;
 
-  struct Attendee {
-    address attendee;
-    uint ticketId;
-  }
+  mapping(address => Attendee) attendees;  // attendee address to Attendee struct
+  mapping(uint => Ticket) public tickets;  // ticket id to Ticket struct
 
   struct Event {
     string name;
@@ -23,9 +21,20 @@ contract Ticketing {
     uint ticketCount;
   }
 
+  struct Ticket {
+    uint ticketId;
+    uint eventId;
+  }
+
+  struct Attendee {
+    uint[] ticketIds;
+    mapping(uint => Ticket) tickets;  // ticket id to Ticket struct
+    mapping(uint => bool) events;  // event id to bool (true if has ticket for event)
+  }
+
   modifier paidEnough(uint _eventID) {
     uint pricePerTicket = events[_eventID].pricePerTicket;
-    require(msg.value > pricePerTicket, "Funds sent must cover price of ticket!");
+    require(msg.value >= pricePerTicket, "Funds sent must cover price of ticket!");
     _;
   }
 
@@ -36,7 +45,7 @@ contract Ticketing {
   }
 
   modifier doesNotAlreadyOwn(uint _eventID, address _purchaser) {
-    require(attendees[_eventID][_purchaser].attendee == address(0), "User already owns a ticket!");
+    require(attendees[_purchaser].events[_eventID] == false, "User already owns a ticket!");
     _;
   }
 
@@ -64,12 +73,16 @@ contract Ticketing {
   function purchaseTicket(uint _eventID) public payable paidEnough(_eventID) hasRemainingTickets(_eventID) doesNotAlreadyOwn(_eventID, msg.sender) returns (uint) {
     // purchase a ticket from the provided event
     Event storage eventStruct = events[_eventID];
-    uint ticketId = eventStruct.ticketCount;
+    uint ticketId = ticketCount;
+    ticketCount = ticketCount + 1;
     eventStruct.ticketCount = ticketId + 1;
 
-    attendees[_eventID][msg.sender] = Attendee({
-      attendee: msg.sender,
-      ticketId: ticketId
+    Attendee storage attendee = attendees[msg.sender];
+    attendee.ticketIds.push(ticketId);
+    attendee.events[_eventID] = true;
+    attendee.tickets[_eventID] = Ticket({
+      ticketId: ticketId,
+      eventId: _eventID
     });
 
     payable(eventStruct.organizer).transfer(eventStruct.pricePerTicket);
@@ -79,5 +92,9 @@ contract Ticketing {
 
   function getAllEventIds() public view returns (uint[] memory) {
     return eventIds;
+  }
+
+  function getTickets(address attendee) public view returns (uint[] memory) {
+    return attendees[attendee].ticketIds;
   }
 }

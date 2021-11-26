@@ -1,4 +1,4 @@
-const address = '0x3f0055AC875D8bE285d32f6Af6539Ed18c5A8d68';
+const address = '0x3D1488C2cFd18878A8E794C329d4CE498805Df91';
 
 var web3;
 var abi;
@@ -44,9 +44,25 @@ const connect = async () => {
   getManageEvents();
 }
 
-const getMyEvents = () => {
-  console.log('get my events');
+const getMyEvents = async () => {
   document.getElementById('my-events').style.display = 'inline';
+  const address = (await web3.eth.getAccounts())[0];
+  const tickets = await ticketingContract.methods.getTickets(address).call();
+  for (var i = 0; i < tickets.length; i++) {
+    const ticketId = tickets[i];
+    const ticket = await ticketingContract.methods.tickets(ticketId).call();
+    const eventId = ticket.eventId;
+    const eventName = (await ticketingContract.methods.events(eventId).call()).name;
+    // Insert event row to My Events table
+    var tbodyRef = document.getElementById('my-events-table').getElementsByTagName('tbody')[0];
+    var row = tbodyRef.insertRow(0);
+    var cell1 = row.insertCell(0);
+    cell1.innerHTML = ticketId;
+    var cell2 = row.insertCell(1);
+    cell2.innerHTML = eventName;
+    var cell3 = row.insertCell(2);
+    cell3.innerHTML = eventId;
+  }
 }
 
 const getManageEvents = () => {
