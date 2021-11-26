@@ -86,3 +86,21 @@ const getAllEvents = async () => {
     cell3.innerHTML = event.organizer;
   }
 }
+
+document.getElementById('create-form').onsubmit = async (e) => {
+  e.preventDefault();
+  const form = e.target;
+  const eventName = form.elements['eventName'].value;
+  const pricePerTicket = form.elements['pricePerTicket'].value;
+  const maxTickets = form.elements['maxTickets'].value;
+
+  try {
+    const address = (await web3.eth.getAccounts())[0];
+    await ticketingContract.methods.createEvent(eventName, pricePerTicket, maxTickets).send({ from: address });
+    window.location.reload();
+  } catch (err) {
+    document.getElementById('submit-error').innerHTML = 'Error: ' + err.message;
+    document.getElementById('submit-error').style.display = 'inline';
+    console.log(err);
+  }
+}

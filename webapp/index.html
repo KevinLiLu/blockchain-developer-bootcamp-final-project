@@ -9,7 +9,7 @@
   
 </head>
 <style>
-  table {
+table {
   font-family: arial, sans-serif;
   border-collapse: collapse;
   width: 100%;
@@ -21,8 +21,8 @@ td, th {
   padding: 8px;
 }
 
-tr:nth-child(even) {
-  background-color: #dddddd;
+.isa_error {
+  color: #D8000C;
 }
 </style>
 <body>
@@ -34,6 +34,19 @@ tr:nth-child(even) {
 
   <div id="connect-button" style="display:none">
     <button>Connect</button>
+  </div>
+
+  <div id="create-container">
+    <form id="create-form">
+      <label for="eventName">Event name:</label><br>
+      <input type="text" id="eventName" name="eventName" value=""><br>
+      <label for="pricePerTicket">Price per ticket:</label><br>
+      <input type="text" id="pricePerTicket" name="pricePerTicket" value=""><br><br>
+      <label for="maxTickets">Max tickets:</label><br>
+      <input type="text" id="maxTickets" name="maxTickets" value=""><br><br>
+      <input type="submit" value="Submit">
+    </form>
+    <p id="submit-error" class="isa_error" style="display:none">Error</p>
   </div>
 
   <div id="my-events" style="display:none">
