@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Simple Dapp</title>
+  <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
+  
+</head>
+<style>
+  table {
+  font-family: arial, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+td, th {
+  border: 1px solid #dddddd;
+  text-align: left;
+  padding: 8px;
+}
+
+tr:nth-child(even) {
+  background-color: #dddddd;
+}
+</style>
+<body>
+  <h1>Trusty Tickets</h1>
+
+  <div id="web3-error" style="display:none">
+    <h2>Could not find MetaMask... Please enable MetaMask to use this Dapp!</h2>
+  </div>
+
+  <div id="connect-button" style="display:none">
+    <button>Connect</button>
+  </div>
+
+  <div id="my-events" style="display:none">
+    <h2>My Events</h2>
+    <table id="my-events-table">
+      <thead>
+        <tr>
+          <th>Id</th>
+          <th>Name</th>
+          <th>Organizer</th>
+        </tr>
+      </thead>
+      <tbody>
+      </tbody>
+    </table>
+  </div>
+
+  <div id="manage-events" style="display:none">
+    <h2>Manage Events</h2>
+    <table id="manage-events-table">
+      <thead>
+        <tr>
+          <th>Id</th>
+          <th>Name</th>
+          <th>Organizer</th>
+        </tr>
+      </thead>
+      <tbody>
+      </tbody>
+    </table>
+  </div>
+
+  <div id="all-events" style="display:none">
+    <h2>All Events</h2>
+    <table id="all-events-table">
+      <thead>
+        <tr>
+          <th>Id</th>
+          <th>Name</th>
+          <th>Organizer</th>
+        </tr>
+      </thead>
+      <tbody>
+      </tbody>
+    </table>
+  </div>
+</body>
+
+<script src="script.js"></script>
+
+</html>
