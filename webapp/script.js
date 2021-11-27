@@ -1,4 +1,4 @@
-const address = '0x3D1488C2cFd18878A8E794C329d4CE498805Df91';
+const address = '0x529Fb077EB6E7B8dE6742E1d24074BF79AE4eB46';
 
 var web3;
 var abi;
@@ -85,11 +85,11 @@ const getAllEvents = async () => {
     var cell3 = row.insertCell(2);
     cell3.innerHTML = event.organizer;
     var cell4 = row.insertCell(3);
-    cell4.innerHTML = event.pricePerTicket;
+    cell4.innerHTML = event.pricePerTicketInUsd;
     var cell5 = row.insertCell(4);
     cell5.innerHTML = event.ticketCount + '/' + event.maxTickets;
     var cell6 = row.insertCell(5);
-    cell6.innerHTML = "<button class='purchase-btn' onclick='purchase(" + event.id + "," + event.pricePerTicket + ")'>Purchase</button>";
+    cell6.innerHTML = "<button class='purchase-btn' onclick='purchase(" + event.id + "," + event.pricePerTicketInUsd + ")'>Purchase</button>";
   }
 }
 
@@ -97,12 +97,12 @@ document.getElementById('create-form').onsubmit = async (e) => {
   e.preventDefault();
   const form = e.target;
   const eventName = form.elements['eventName'].value;
-  const pricePerTicket = form.elements['pricePerTicket'].value;
+  const pricePerTicketInUsd = form.elements['pricePerTicketInUsd'].value;
   const maxTickets = form.elements['maxTickets'].value;
 
   try {
     const address = (await web3.eth.getAccounts())[0];
-    await ticketingContract.methods.createEvent(eventName, pricePerTicket, maxTickets).send({ from: address });
+    await ticketingContract.methods.createEvent(eventName, pricePerTicketInUsd, maxTickets).send({ from: address });
     window.location.reload();
   } catch (err) {
     document.getElementById('submit-error').innerHTML = 'Error: ' + err.message;
@@ -111,10 +111,11 @@ document.getElementById('create-form').onsubmit = async (e) => {
   }
 }
 
-const purchase = async (eventId, pricePerTicket) => {
+const purchase = async (eventId, pricePerTicketInUsd) => {
   try {
     const address = (await web3.eth.getAccounts())[0];
-    await ticketingContract.methods.purchaseTicket(eventId).send({ from: address, value: pricePerTicket });
+    const pricePerTicketInWei = await ticketingContract.methods.getPriceInWei(pricePerTicketInUsd).call();
+    await ticketingContract.methods.purchaseTicket(eventId).send({ from: address, value: pricePerTicketInWei });
     window.location.reload();
   } catch (err) {
     document.getElementById('purchase-error').innerHTML = 'Error: ' + err.message;

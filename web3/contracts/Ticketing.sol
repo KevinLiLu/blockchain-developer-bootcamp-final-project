@@ -1,7 +1,11 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.5.16 <0.9.0;
+pragma solidity >=0.8.2 < 0.9.0;
+
+import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 
 contract Ticketing {
+
+  AggregatorV3Interface internal priceFeed;
 
   uint public eventCount = 0;
   uint public ticketCount = 0;
@@ -11,12 +15,13 @@ contract Ticketing {
 
   mapping(address => Attendee) attendees;  // attendee address to Attendee struct
   mapping(uint => Ticket) public tickets;  // ticket id to Ticket struct
+  
 
   struct Event {
     string name;
     uint id;
     address organizer;
-    uint pricePerTicket;
+    uint pricePerTicketInUsd;
     uint maxTickets;
     uint ticketCount;
   }
@@ -32,9 +37,13 @@ contract Ticketing {
     mapping(uint => bool) events;  // event id to bool (true if has ticket for event)
   }
 
+  constructor() {
+    priceFeed = AggregatorV3Interface(0x9326BFA02ADD2366b30bacB125260Af641031331);
+  }
+
   modifier paidEnough(uint _eventID) {
-    uint pricePerTicket = events[_eventID].pricePerTicket;
-    require(msg.value >= pricePerTicket, "Funds sent must cover price of ticket!");
+    uint pricePerTicketInUsd = events[_eventID].pricePerTicketInUsd;
+    require(msg.value >= getPriceInWei(pricePerTicketInUsd), "Funds sent must cover price of ticket!");
     _;
   }
 
@@ -49,7 +58,16 @@ contract Ticketing {
     _;
   }
 
-  function createEvent(string memory _name, uint _pricePerTicket, uint _maxTickets) public returns (uint) {
+  /**
+    * Returns the latest price
+    */
+  function getPriceInWei(uint priceInUsd) public view returns (uint) {
+    (,int price,,,) = priceFeed.latestRoundData();
+    uint usdToWei = (10**18)*(10**priceFeed.decimals())/uint(price);
+    return priceInUsd * usdToWei;
+  }
+
+  function createEvent(string memory _name, uint _pricePerTicketInUsd, uint _maxTickets) public returns (uint) {
     // registers a new event and returns the newly created event id
     uint eventId = eventCount;
 
@@ -57,7 +75,7 @@ contract Ticketing {
       name: _name,
       id: eventId,
       organizer: msg.sender,
-      pricePerTicket: _pricePerTicket,
+      pricePerTicketInUsd: _pricePerTicketInUsd,
       maxTickets: _maxTickets,
       ticketCount: 0
     });
@@ -85,7 +103,9 @@ contract Ticketing {
       eventId: _eventID
     });
 
-    payable(eventStruct.organizer).transfer(eventStruct.pricePerTicket);
+    uint priceInWei = getPriceInWei(eventStruct.pricePerTicketInUsd);
+
+    payable(eventStruct.organizer).transfer(priceInWei);
 
     return ticketId;
   }
