@@ -84,6 +84,12 @@ const getAllEvents = async () => {
     cell2.innerHTML = event.name;
     var cell3 = row.insertCell(2);
     cell3.innerHTML = event.organizer;
+    var cell4 = row.insertCell(3);
+    cell4.innerHTML = event.pricePerTicket;
+    var cell5 = row.insertCell(4);
+    cell5.innerHTML = event.ticketCount + '/' + event.maxTickets;
+    var cell6 = row.insertCell(5);
+    cell6.innerHTML = "<button class='purchase-btn' onclick='purchase(" + event.id + "," + event.pricePerTicket + ")'>Purchase</button>";
   }
 }
 
@@ -101,6 +107,18 @@ document.getElementById('create-form').onsubmit = async (e) => {
   } catch (err) {
     document.getElementById('submit-error').innerHTML = 'Error: ' + err.message;
     document.getElementById('submit-error').style.display = 'inline';
+    console.log(err);
+  }
+}
+
+const purchase = async (eventId, pricePerTicket) => {
+  try {
+    const address = (await web3.eth.getAccounts())[0];
+    await ticketingContract.methods.purchaseTicket(eventId).send({ from: address, value: pricePerTicket });
+    window.location.reload();
+  } catch (err) {
+    document.getElementById('purchase-error').innerHTML = 'Error: ' + err.message;
+    document.getElementById('purchase-error').style.display = 'inline';
     console.log(err);
   }
 }

@@ -75,7 +75,7 @@ contract Ticketing {
     Event storage eventStruct = events[_eventID];
     uint ticketId = ticketCount;
     ticketCount = ticketCount + 1;
-    eventStruct.ticketCount = ticketId + 1;
+    eventStruct.ticketCount = eventStruct.ticketCount  + 1;
 
     Attendee storage attendee = attendees[msg.sender];
     attendee.ticketIds.push(ticketId);
