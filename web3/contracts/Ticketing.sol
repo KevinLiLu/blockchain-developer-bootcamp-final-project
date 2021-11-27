@@ -3,19 +3,25 @@ pragma solidity >=0.8.2 < 0.9.0;
 
 import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 
+/// @title An event ticketing contract
+/// @author Kevin Lu
+/// @notice This contract implements the most basic event ticketing requirements of event creation and ticket purchasing
 contract Ticketing {
 
   AggregatorV3Interface internal priceFeed;
 
+  /// @notice Stores the number of created events (which also is the event id for now)
   uint public eventCount = 0;
+  /// @notice Stores the number of purchased tickets (which also is the ticket id for now)
   uint public ticketCount = 0;
-
-  mapping(uint => Event) public events;  // event id to Event struct
+  /// @notice Stores a mapping of event id to Event struct
+  mapping(uint => Event) public events;
+  /// @notice Stores an array of created event ids
   uint[] public eventIds;
-
-  mapping(address => Attendee) attendees;  // attendee address to Attendee struct
-  mapping(uint => Ticket) public tickets;  // ticket id to Ticket struct
-  
+  /// @notice Stores a mapping of attendee address to Attendee struct
+  mapping(address => Attendee) attendees;
+  /// @notice Stores a mapping of ticket id to Ticket struct
+  mapping(uint => Ticket) public tickets;
 
   struct Event {
     string name;
@@ -58,15 +64,20 @@ contract Ticketing {
     _;
   }
 
-  /**
-    * Returns the latest price
-    */
-  function getPriceInWei(uint priceInUsd) public view returns (uint) {
+  /// @notice Calculate USD ticket price in wei
+  /// @param _priceInUsd The price of a ticket in USD
+  /// @return Ticket price in wei
+  function getPriceInWei(uint _priceInUsd) public view returns (uint) {
     (,int price,,,) = priceFeed.latestRoundData();
     uint usdToWei = (10**18)*(10**priceFeed.decimals())/uint(price);
-    return priceInUsd * usdToWei;
+    return _priceInUsd * usdToWei;
   }
 
+  /// @notice Create an event with provided parameters
+  /// @param _name Name of event
+  /// @param _pricePerTicketInUsd The price of a ticket in USD
+  /// @param _maxTickets Max tickets to sell
+  /// @return Created event id
   function createEvent(string memory _name, uint _pricePerTicketInUsd, uint _maxTickets) public returns (uint) {
     // registers a new event and returns the newly created event id
     uint eventId = eventCount;
@@ -88,6 +99,9 @@ contract Ticketing {
     return eventId;
   }
 
+  /// @notice Purchase a ticket for the given event id
+  /// @param _eventID Event id to purchase ticket from
+  /// @return Purchased ticket id
   function purchaseTicket(uint _eventID) public payable paidEnough(_eventID) hasRemainingTickets(_eventID) doesNotAlreadyOwn(_eventID, msg.sender) returns (uint) {
     // purchase a ticket from the provided event
     Event storage eventStruct = events[_eventID];
@@ -105,15 +119,22 @@ contract Ticketing {
 
     uint priceInWei = getPriceInWei(eventStruct.pricePerTicketInUsd);
 
-    payable(eventStruct.organizer).transfer(priceInWei);
+    // payable(eventStruct.organizer).transfer(priceInWei);
+    (bool success, ) = eventStruct.organizer.call{value: priceInWei}('');
+    require(success, "Transfer failed.");
 
     return ticketId;
   }
 
+  /// @notice Get all event ids
+  /// @return Event ids
   function getAllEventIds() public view returns (uint[] memory) {
     return eventIds;
   }
 
+  /// @notice Get ticket ids for a given attendee
+  /// @param attendee Attendee address
+  /// @return Ticket ids owned by the attendee address
   function getTickets(address attendee) public view returns (uint[] memory) {
     return attendees[attendee].ticketIds;
   }
