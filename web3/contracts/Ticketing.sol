@@ -67,7 +67,7 @@ contract Ticketing {
   /// @notice Calculate USD ticket price in wei
   /// @param _priceInUsd The price of a ticket in USD
   /// @return Ticket price in wei
-  function getPriceInWei(uint _priceInUsd) public view returns (uint) {
+  function getPriceInWei(uint _priceInUsd) public view virtual returns (uint) {
     (,int price,,,) = priceFeed.latestRoundData();
     uint usdToWei = (10**18)*(10**priceFeed.decimals())/uint(price);
     return _priceInUsd * usdToWei;
