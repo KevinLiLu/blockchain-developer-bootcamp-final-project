@@ -120,7 +120,6 @@ contract Ticketing is Ownable {
 
     uint priceInWei = getPriceInWei(eventStruct.pricePerTicketInUsd);
 
-    // payable(eventStruct.organizer).transfer(priceInWei);
     (bool success, ) = eventStruct.organizer.call{value: priceInWei}('');
     require(success, "Transfer failed.");
 
