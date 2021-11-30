@@ -22,9 +22,10 @@ window.addEventListener('load', async () => {
       // User's metamask account is not connected to our dapp
       document.getElementById('connect-button').style.display = 'inline';
     } else {
-      // Account connected so show My Events and Manage Events
+      // Account connected so show My Events, Manage Events, and Create Event
       getMyEvents();
       getManageEvents();
+      document.getElementById('create-container').style.display = 'inline';
     }
     getAllEvents();
   } else {
@@ -51,6 +52,7 @@ const getMyEvents = async () => {
   for (var i = 0; i < tickets.length; i++) {
     const ticketId = tickets[i];
     const ticket = await ticketingContract.methods.tickets(ticketId).call();
+    console.log(ticketId, ticket);
     const eventId = ticket.eventId;
     const eventName = (await ticketingContract.methods.events(eventId).call()).name;
     // Insert event row to My Events table
