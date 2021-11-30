@@ -14,7 +14,7 @@ window.addEventListener('load', async () => {
     });
     web3 = new Web3(window.ethereum);
     // Fetch ABI to construct contract
-    abi = (await (await fetch('../web3/build/contracts/Ticketing.json')).json()).abi;
+    abi = (await (await fetch('Ticketing.json')).json()).abi;
     ticketingContract = new web3.eth.Contract(abi, address);
     // Check to see if user has connected before (non-empty array)
     const accounts = await web3.eth.getAccounts();
