@@ -1,4 +1,4 @@
-const address = '0x529Fb077EB6E7B8dE6742E1d24074BF79AE4eB46';
+const address = '0x24a0420d640D8e6a758B25df36eE47526836f09d';
 
 var web3;
 var abi;
@@ -101,6 +101,7 @@ document.getElementById('create-form').onsubmit = async (e) => {
   const maxTickets = form.elements['maxTickets'].value;
 
   try {
+    clearErrors();
     const address = (await web3.eth.getAccounts())[0];
     await ticketingContract.methods.createEvent(eventName, pricePerTicketInUsd, maxTickets).send({ from: address });
     window.location.reload();
@@ -113,6 +114,7 @@ document.getElementById('create-form').onsubmit = async (e) => {
 
 const purchase = async (eventId, pricePerTicketInUsd) => {
   try {
+    clearErrors();
     const address = (await web3.eth.getAccounts())[0];
     const pricePerTicketInWei = await ticketingContract.methods.getPriceInWei(pricePerTicketInUsd).call();
     await ticketingContract.methods.purchaseTicket(eventId).send({ from: address, value: pricePerTicketInWei });
@@ -122,4 +124,11 @@ const purchase = async (eventId, pricePerTicketInUsd) => {
     document.getElementById('purchase-error').style.display = 'inline';
     console.log(err);
   }
+}
+
+const clearErrors = () => {
+  document.getElementById('submit-error').style.display = 'none';
+  document.getElementById('purchase-error').innerHTML = '';
+  document.getElementById('purchase-error').style.display = 'none';
+  document.getElementById('submit-error').innerHTML = '';
 }
