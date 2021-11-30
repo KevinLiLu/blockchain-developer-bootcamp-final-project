@@ -1,4 +1,4 @@
-const address = '0x24a0420d640D8e6a758B25df36eE47526836f09d';
+const address = '0xd773f1C930FA45626e09D4Ea66F426421B5bDe92';
 
 var web3;
 var abi;
