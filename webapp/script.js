@@ -1,4 +1,4 @@
-const address = '0xd773f1C930FA45626e09D4Ea66F426421B5bDe92';
+const address = '0x8383A8f58911E59DC6F261ddD3eaAec81213E4Fe';
 
 var web3;
 var abi;
@@ -41,6 +41,7 @@ document.getElementById('connect-button').onclick = async () => {
 const connect = async () => {
   await ethereum.request({ method: 'eth_requestAccounts'});
   document.getElementById('connect-button').style.display = 'none';
+  document.getElementById('create-container').style.display = 'inline';
   getMyEvents();
   getManageEvents();
 }
@@ -52,7 +53,6 @@ const getMyEvents = async () => {
   for (var i = 0; i < tickets.length; i++) {
     const ticketId = tickets[i];
     const ticket = await ticketingContract.methods.tickets(ticketId).call();
-    console.log(ticketId, ticket);
     const eventId = ticket.eventId;
     const eventName = (await ticketingContract.methods.events(eventId).call()).name;
     // Insert event row to My Events table

@@ -113,7 +113,7 @@ contract Ticketing is Ownable {
     Attendee storage attendee = attendees[msg.sender];
     attendee.ticketIds.push(ticketId);
     attendee.events[_eventID] = true;
-    Ticekt memory ticket = Ticket({
+    Ticket memory ticket = Ticket({
       ticketId: ticketId,
       eventId: _eventID
     });
