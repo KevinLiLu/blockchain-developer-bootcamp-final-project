@@ -85,4 +85,13 @@ contract("Ticketing", async accounts => {
       assert.include(err.message, "revert User already owns a ticket!");
     }
   });
+
+  // This test validates that only the owner (contract deployer) can create events.
+  it("should only allow owner to create events", async () => {
+    try {
+      await instance.createEvent(eventName, pricePerTicketInUsd, pricePerTicketInUsd, { from: alice });
+    } catch (err) {
+      assert.include(err.message, "revert Ownable: caller is not the owner");
+    }
+  });
 });

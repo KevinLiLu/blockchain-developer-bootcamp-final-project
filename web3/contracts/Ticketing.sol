@@ -2,11 +2,12 @@
 pragma solidity >=0.8.2 < 0.9.0;
 
 import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
 /// @title An event ticketing contract
 /// @author Kevin Lu
 /// @notice This contract implements the most basic event ticketing requirements of event creation and ticket purchasing
-contract Ticketing {
+contract Ticketing is Ownable {
 
   AggregatorV3Interface internal priceFeed;
 
@@ -73,12 +74,12 @@ contract Ticketing {
     return _priceInUsd * usdToWei;
   }
 
-  /// @notice Create an event with provided parameters
+  /// @notice Create an event with provided parameters. Only the contract owner (deployer) can perform this action.
   /// @param _name Name of event
   /// @param _pricePerTicketInUsd The price of a ticket in USD
   /// @param _maxTickets Max tickets to sell
   /// @return Created event id
-  function createEvent(string memory _name, uint _pricePerTicketInUsd, uint _maxTickets) public returns (uint) {
+  function createEvent(string memory _name, uint _pricePerTicketInUsd, uint _maxTickets) public onlyOwner() returns (uint) {
     // registers a new event and returns the newly created event id
     uint eventId = eventCount;
 
