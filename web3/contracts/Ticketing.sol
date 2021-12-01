@@ -140,4 +140,10 @@ contract Ticketing is Ownable {
   function getTickets(address attendee) public view returns (uint[] memory) {
     return attendees[attendee].ticketIds;
   }
+
+  /// @notice Get owner of the contract (deployer)
+  /// @return Owner address
+  function getOwner() public view returns (address) {
+    return owner();
+  }
 }

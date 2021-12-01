@@ -1,4 +1,4 @@
-const address = '0x8383A8f58911E59DC6F261ddD3eaAec81213E4Fe';
+const address = '0x08d3B787Ac3431783001B496177CEC29B24F67c7';
 
 var web3;
 var abi;
@@ -16,6 +16,9 @@ window.addEventListener('load', async () => {
     // Fetch ABI to construct contract
     abi = (await (await fetch('Ticketing.json')).json()).abi;
     ticketingContract = new web3.eth.Contract(abi, address);
+    // Get and display owner
+    const owner = await ticketingContract.methods.getOwner().call();
+    document.getElementById('create-event-text').innerHTML = 'Create Event (owner ' + owner + ')';
     // Check to see if user has connected before (non-empty array)
     const accounts = await web3.eth.getAccounts();
     if (accounts.length == 0) {
